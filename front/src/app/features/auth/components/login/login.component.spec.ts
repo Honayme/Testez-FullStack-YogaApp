@@ -12,6 +12,7 @@ import { SessionService } from 'src/app/services/session.service'
 import { AuthService } from '../../services/auth.service';
 
 import { LoginComponent } from './login.component';
+import {of} from "rxjs";
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
@@ -41,7 +42,7 @@ describe('LoginComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  // ce test permet de vérifier que le formulaire contient 2 champs : email et password
+  // ce test permet de vérifier que le formulate contient 2 champs : email et password
   it('should initialize form with empty values', () => {
     expect(component.form.value).toEqual({
       email: '',
