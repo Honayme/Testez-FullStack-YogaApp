@@ -42,7 +42,7 @@ describe('LoginComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  // ce test permet de vérifier que le formulate contient 2 champs : email et password
+  // Verify form initializes with email and password fields
   it('should initialize form with empty values', () => {
     expect(component.form.value).toEqual({
       email: '',
@@ -50,21 +50,21 @@ describe('LoginComponent', () => {
     });
   });
 
-  // ce test permet de  verifier que le formulaire contient le champ email
+// Ensure email control is required
   it('should make the email control required', () => {
     const control = component.form.get('email');
     control?.setValue('');
     expect(control?.valid).toBeFalsy();
   });
 
-  // ce test permet de vérifier que le formulaire contient le champ password
+// Ensure password control is required
   it('should make the password control required', () => {
     const control = component.form.get('password');
     control?.setValue('');
     expect(control?.valid).toBeFalsy();
   });
 
-  // ce test permet de vérifier que le formulaire est valide si les champs sont remplis
+// Verify login method is called on form submission
   it('should call login method from AuthService', () => {
     const authService = TestBed.inject(AuthService);
     const spy = jest.spyOn(authService, 'login').mockReturnValue(of());
