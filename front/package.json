@@ -4,6 +4,7 @@
   "scripts": {
     "start": "ng serve",
     "test": "jest",
+    "testcov": "jest --coverage",
     "test:watch": "jest --watch",
     "lint": "ng lint",
     "e2e": "ng e2e",

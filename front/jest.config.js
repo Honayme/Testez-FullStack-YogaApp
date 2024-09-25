@@ -10,6 +10,10 @@ module.exports = {
   coverageDirectory: './coverage/jest',
   testPathIgnorePatterns: ['<rootDir>/node_modules/'],
   coveragePathIgnorePatterns: ['<rootDir>/node_modules/'],
+  collectCoverageFrom: [
+    "src/app/**/*.{js,jsx,ts,tsx}",
+    "!src/app/**/*module.ts",
+  ],
   coverageThreshold: {
     global: {
       statements: 80
