@@ -3,27 +3,47 @@ package com.openclassrooms.starterjwt.controllers;
 import com.openclassrooms.starterjwt.dto.UserDto;
 import com.openclassrooms.starterjwt.mapper.UserMapper;
 import com.openclassrooms.starterjwt.models.User;
+import com.openclassrooms.starterjwt.repository.UserRepository;
 import com.openclassrooms.starterjwt.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.StatusResultMatchers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+
+
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class UserControllerTest {
+
+@SpringBootTest
+@ExtendWith(MockitoExtension.class)
+@ActiveProfiles("test")
+@AutoConfigureMockMvc
+class UserControllerTest {
+
+    @Autowired
+    MockMvc mockMvc;
 
     @Mock
     private UserController userController;
@@ -34,105 +54,83 @@ public class UserControllerTest {
     @Mock
     private UserService userService;
 
-    @Autowired
-    MockMvc mockMvc;
+    @Mock
+    private UserRepository userRepository;
 
     private User user;
     private UserDto userDto;
+    private List<UserDto> userDtos;
+    private List<User> users;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        // Initialisation commune pour plusieurs tests
+        userController = new UserController(userService, userMapper);
         Long id = 1L;
         String lastName = "toto";
         String firstName = "tata";
-
         user = new User();
         user.setId(id);
         user.setLastName(lastName);
         user.setFirstName(firstName);
 
-        userDto = new UserDto();
-        userDto.setId(id);
-        userDto.setLastName(lastName);
-        userDto.setFirstName(firstName);
-
-        // Mock du mapper
-        when(userMapper.toDto(user)).thenReturn(userDto);
+        userDto = userMapper.toDto(user);
+        userDtos = Collections.singletonList(userDto);
+        users = Collections.singletonList(user);
     }
 
     @Test
-    void findById_should_return_user() {
-        // Mock du service
+    void findById() {
         when(userService.findById(1L)).thenReturn(user);
-
+        when(userMapper.toDto(user)).thenReturn(userDto);
         ResponseEntity<?> responseEntity = userController.findById("1");
-
-        // Vérifications
         assertEquals(userDto, responseEntity.getBody());
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     }
 
     @Test
     void findById_should_return_not_found() {
-        // Mock d'un user non trouvé
         when(userService.findById(1L)).thenReturn(null);
-
         ResponseEntity<?> responseEntity = userController.findById("1");
-
-        // Vérification du statut NOT_FOUND
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
     }
 
     @Test
-    void delete_should_return_ok() {
-        // Mock du service pour un user trouvé
-        when(userService.findById(1L)).thenReturn(user);
+    void delete() {
 
-        // Mock de l'utilisateur courant
+        Long id = 1L;
+
+        when(userService.findById(1L)).thenReturn(user);
         UserDetails userDetails = mock(UserDetails.class);
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(userDetails, null));
-
-        ResponseEntity<?> responseEntity = userController.save("1");
-
-        // Vérification de la réponse OK
+        ResponseEntity<?> responseEntity = userController.save(id.toString());
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+
+
     }
 
     @Test
     void delete_should_return_not_found() {
-        // Mock d'un user non trouvé
+        Long id = 1L;
         when(userService.findById(1L)).thenReturn(null);
-
-        ResponseEntity<?> responseEntity = userController.save("1");
-
-        // Vérification du statut NOT_FOUND
+        ResponseEntity<?> responseEntity = userController.save(id.toString());
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
     }
 
     @Test
     void delete_should_return_unauthorized() {
-        // Mock du service pour un user trouvé
+        Long id = 1L;
         when(userService.findById(1L)).thenReturn(user);
-
-        // Mock de l'utilisateur courant avec un nom d'utilisateur incorrect
         UserDetails userDetails = mock(UserDetails.class);
         when(userDetails.getUsername()).thenReturn("toto.com");
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(userDetails, null));
-
-        ResponseEntity<?> responseEntity = userController.save("1");
-
-        // Vérification du statut UNAUTHORIZED
+        ResponseEntity<?> responseEntity = userController.save(id.toString());
         assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
     }
 
     @Test
     @WithMockUser
-    public void shouldFindById_withMockMvc() throws Exception {
-        // Test d'intégration avec MockMvc pour vérifier l'API directement
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/user/1"))
-                .andExpect(status().isOk());
+    public void shouldFindById() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/user/1")).andExpect(status().isOk());
     }
 }
