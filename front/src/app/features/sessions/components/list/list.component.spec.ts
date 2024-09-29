@@ -6,10 +6,15 @@ import { expect } from '@jest/globals';
 import { SessionService } from 'src/app/services/session.service';
 
 import { ListComponent } from './list.component';
+import { SessionInformation } from 'src/app/interfaces/sessionInformation.interface';
 
 describe('ListComponent', () => {
   let component: ListComponent;
   let fixture: ComponentFixture<ListComponent>;
+  let sessionService: jest.Mocked<SessionService>;
+
+
+  const sessionInformation: SessionInformation = { token: '', type: '', id: 1, username: '', firstName: '', lastName: '', admin: true };
 
   const mockSessionService = {
     sessionInformation: {
@@ -18,10 +23,15 @@ describe('ListComponent', () => {
   }
 
   beforeEach(async () => {
+
+    sessionService = {
+      sessionInformation: sessionInformation
+    } as any as jest.Mocked<SessionService>;
+
     await TestBed.configureTestingModule({
       declarations: [ListComponent],
       imports: [HttpClientModule, MatCardModule, MatIconModule],
-      providers: [{ provide: SessionService, useValue: mockSessionService }]
+      providers: [{ provide: SessionService, useValue: mockSessionService },  { provide: SessionService, useValue: sessionService },]
     })
       .compileComponents();
 
@@ -33,4 +43,10 @@ describe('ListComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('#user should return sessionInformation', () => {
+    expect(component.user).toEqual(sessionInformation);
+  });
+
+
 });
