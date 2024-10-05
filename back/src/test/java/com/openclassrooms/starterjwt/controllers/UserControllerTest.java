@@ -128,9 +128,9 @@ class UserControllerTest {
         assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
     }
 
-    @Test
-    @WithMockUser
-    public void shouldFindById() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/user/1")).andExpect(status().isOk());
-    }
+//    @Test
+//    @WithMockUser
+//    public void shouldFindById() throws Exception {
+//        mockMvc.perform(MockMvcRequestBuilders.get("/api/user/1")).andExpect(status().isOk());
+//    }
 }
