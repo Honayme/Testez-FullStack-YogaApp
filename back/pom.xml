@@ -120,6 +120,16 @@
 						<goals>
 							<goal>report</goal>
 						</goals>
+						<configuration>
+							<excludes>
+								<!-- Exclure la classe principale -->
+								<exclude>com/openclassrooms/starterjwt/StarterJwtApplication*</exclude>
+								<!-- Exclure les DTOs (si ce n'est pas déjà fait) -->
+								<exclude>com/openclassrooms/starterjwt/dto/**</exclude>
+								<!-- Exclure d'autres classes si nécessaire -->
+								<!-- <exclude>com/openclassrooms/starterjwt/someOtherClass</exclude> -->
+							</excludes>
+						</configuration>
 					</execution>
 
 					<!-- Vérification du seuil de couverture à la fin des tests -->
